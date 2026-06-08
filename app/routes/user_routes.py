@@ -4,12 +4,7 @@ from typing import Optional
 
 router = APIRouter()
 
-# Base de datos simulada en memoria
-usuarios_db: list[dict] = [
-    {"id": 1, "name": "Carlos Admin", "email": "carlos@mail.com", "role": "admin", "is_active": True},
-    {"id": 2, "name": "Laura Support", "email": "laura@mail.com", "role": "support", "is_active": True},
-    {"id": 3, "name": "Pedro User", "email": "pedro@mail.com", "role": "user", "is_active": False},
-]
+from app.data.users_db import usuarios_db
 
 def agregar_cabeceras(response: Response):
     response.headers["X-App-Name"] = "device_systems"
