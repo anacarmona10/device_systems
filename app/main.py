@@ -3,7 +3,9 @@ from app.routes.user_routes import router
 
 from app.database.connection import engine, Base
 from app.models.user_model import User
-
+from app.models.device_model import Device
+from app.models.loan_model import Loan
+from app.routes.device_routes import router as device_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -14,6 +16,11 @@ app = FastAPI(
 )
 
 app.include_router(router, prefix="/api/v1", tags=["Usuarios"])
+app.include_router(
+    device_router,
+    prefix="/api/v1",
+    tags=["Devices"]
+)
 
 @app.get("/")
 def root():

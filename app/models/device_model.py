@@ -5,30 +5,40 @@ from app.database.connection import Base
 
 from sqlalchemy.orm import relationship
 
-class User(Base):
 
-    __tablename__ = "users"
+class Device(Base):
 
-    id = Column(Integer, primary_key=True, index=True)
+    __tablename__ = "devices"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
     name = Column(
         String,
         nullable=False
     )
 
-    email = Column(
+    serial_number = Column(
         String,
         unique=True,
         nullable=False,
         index=True
     )
 
-    role = Column(
+    device_type = Column(
         String,
         nullable=False
     )
 
-    is_active = Column(
+    brand = Column(
+        String,
+        nullable=True
+    )
+
+    is_available = Column(
         Boolean,
         default=True
     )
@@ -40,6 +50,5 @@ class User(Base):
 
     loans = relationship(
     "Loan",
-    back_populates="user"
+    back_populates="device"
     )
-
