@@ -15,6 +15,14 @@ class UserCreate(BaseModel):
     role: RoleEnum
     is_active: bool
 
+# Esto es para la actualización de usuarios para que todos los campos no sean obligatorios en ese caso 
+class UserUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=3)
+    email: Optional[EmailStr] = None
+    role: Optional[RoleEnum] = None
+    is_active: Optional[bool] = None
+
+
 # Modelo de respuesta (lo que la API devuelve)
 class UserResponse(BaseModel):
     id: int
@@ -24,3 +32,4 @@ class UserResponse(BaseModel):
     is_active: bool
 
     model_config = {"from_attributes": True}
+

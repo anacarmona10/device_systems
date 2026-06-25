@@ -1,6 +1,21 @@
-from fastapi import APIRouter, HTTPException, Query, Response
+from fastapi import APIRouter, HTTPException, Query, Response, Depends
 from app.schemas.user_schema import UserCreate, UserResponse, RoleEnum
 from typing import Optional
+from app.services.user_service import (
+    obtener_todos_los_usuarios,
+    crear_nuevo_usuario,
+    actualizar_usuario_completo,
+    actualizar_usuario_parcial,
+    eliminar_usuario,
+    correo_existe
+)
+from app.schemas.user_schema import UserUpdate
+
+
+from app.dependencies.user_dependencies import (
+    get_user_or_404,
+    validar_email_unico
+)
 
 router = APIRouter()
 
@@ -11,45 +26,132 @@ def agregar_cabeceras(response: Response):
     response.headers["X-API-Version"] = "1.0"
 
 
-# GET /users — listar todos, con filtros opcionales
+# GET de todos
 @router.get("/users", response_model=list[UserResponse])
 def listar_usuarios(
     response: Response,
-    role: Optional[RoleEnum] = Query(default=None, description="Filtrar por rol"),
-    is_active: Optional[bool] = Query(default=None, description="Filtrar por estado activo")
+    role: Optional[RoleEnum]=Query(None),
+    is_active: Optional[bool]=Query(None)
 ):
+
     agregar_cabeceras(response)
-    resultado = usuarios_db
 
-    if role is not None:
-        resultado = [u for u in resultado if u["role"] == role]
-    if is_active is not None:
-        resultado = [u for u in resultado if u["is_active"] == is_active]
+    return obtener_todos_los_usuarios(
+        role,
+        is_active
+    )
 
-    return resultado
-
-
-# GET /users/{user_id} — buscar por ID
+# GET /users/{user_id} — por ID
 @router.get("/users/{user_id}", response_model=UserResponse)
-def obtener_usuario(user_id: int, response: Response):
-    agregar_cabeceras(response)
-    for usuario in usuarios_db:
-        if usuario["id"] == user_id:
-            return usuario
-    raise HTTPException(status_code=404, detail=f"Usuario con id {user_id} no encontrado")
 
+def obtener_usuario(
+    response: Response,
+    usuario=Depends(get_user_or_404)
+):
 
-# POST /users — crear nuevo usuario
-@router.post("/users", response_model=UserResponse, status_code=201)
-def crear_usuario(usuario: UserCreate, response: Response):
     agregar_cabeceras(response)
 
-    # Verificar email duplicado
+    return usuario
+
+
+# post
+@router.post(
+    "/users",
+    response_model=UserResponse,
+    status_code=201
+)
+
+def crear_usuario(
+    usuario: UserCreate,
+    response: Response
+):
+
+    agregar_cabeceras(response)
+
+    validar_email_unico(usuario.email)
+
+    return crear_nuevo_usuario(usuario)
+
+
+@router.put("/users/{user_id}", response_model=UserResponse)
+def actualizar_usuario(
+    user_id: int,
+    usuario: UserCreate,
+    response: Response
+):
+
+    agregar_cabeceras(response)
+
+    usuario_existente = get_user_or_404(user_id)
+
     for u in usuarios_db:
-        if u["email"] == usuario.email:
-            raise HTTPException(status_code=400, detail="El correo ya está registrado")
+        if (
+            u["email"] == usuario.email
+            and u["id"] != user_id
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="El correo ya está registrado"
+            )
 
-    nuevo_id = max(u["id"] for u in usuarios_db) + 1
-    nuevo_usuario = {"id": nuevo_id, **usuario.model_dump()}
-    usuarios_db.append(nuevo_usuario)
-    return nuevo_usuario
+    return actualizar_usuario_completo(
+        user_id,
+        usuario
+    )
+
+
+
+@router.patch("/users/{user_id}", response_model=UserResponse)
+def actualizar_usuario_parcialmente(
+    user_id: int,
+    usuario: UserUpdate,
+    response: Response
+):
+
+    agregar_cabeceras(response)
+
+    get_user_or_404(user_id)
+
+    datos = usuario.model_dump(exclude_unset=True)
+
+    if not datos:
+        raise HTTPException(
+            status_code=400,
+            detail="No se enviaron datos para actualizar"
+        )
+
+    if "email" in datos:
+
+        for u in usuarios_db:
+
+            if (
+                u["email"] == datos["email"]
+                and u["id"] != user_id
+            ):
+                raise HTTPException(
+                    status_code=400,
+                    detail="El correo ya está registrado"
+                )
+
+    return actualizar_usuario_parcial(
+        user_id,
+        datos
+    )
+
+
+
+@router.delete("/users/{user_id}")
+def eliminar_usuario_endpoint(
+    user_id: int,
+    response: Response
+):
+
+    agregar_cabeceras(response)
+
+    get_user_or_404(user_id)
+
+    eliminar_usuario(user_id)
+
+    return {
+        "message": "Usuario eliminado correctamente"
+    }
