@@ -19,39 +19,50 @@ from app.dependencies.user_dependencies import (
 
 router = APIRouter()
 
-from app.data.users_db import usuarios_db
+
+from sqlalchemy.orm import Session
+
+from app.dependencies.database_dependency import get_db
 
 def agregar_cabeceras(response: Response):
     response.headers["X-App-Name"] = "device_systems"
     response.headers["X-API-Version"] = "1.0"
 
 
-# GET de todos
 @router.get("/users", response_model=list[UserResponse])
 def listar_usuarios(
     response: Response,
-    role: Optional[RoleEnum]=Query(None),
-    is_active: Optional[bool]=Query(None)
+    role: Optional[RoleEnum] = Query(None),
+    is_active: Optional[bool] = Query(None),
+    sort_by: Optional[str] = Query(None),
+    email: Optional[str] = Query(None),
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
     return obtener_todos_los_usuarios(
+        db,
         role,
-        is_active
+        is_active,
+        sort_by,
+        email
     )
 
 # GET /users/{user_id} — por ID
 @router.get("/users/{user_id}", response_model=UserResponse)
-
 def obtener_usuario(
+    user_id: int,
     response: Response,
-    usuario=Depends(get_user_or_404)
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
-    return usuario
+    return get_user_or_404(
+        db,
+        user_id
+    )
 
 
 # post
@@ -60,34 +71,46 @@ def obtener_usuario(
     response_model=UserResponse,
     status_code=201
 )
-
 def crear_usuario(
     usuario: UserCreate,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
-    validar_email_unico(usuario.email)
+    validar_email_unico(
+        db,
+        usuario.email
+    )
 
-    return crear_nuevo_usuario(usuario)
+    return crear_nuevo_usuario(
+        db,
+        usuario
+    )
 
 
 @router.put("/users/{user_id}", response_model=UserResponse)
 def actualizar_usuario(
     user_id: int,
     usuario: UserCreate,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
-    usuario_existente = get_user_or_404(user_id)
+    get_user_or_404(
+        db,
+        user_id
+    )
 
-    for u in usuarios_db:
+    usuario_email = obtener_todos_los_usuarios(db)
+
+    for u in usuario_email:
         if (
-            u["email"] == usuario.email
-            and u["id"] != user_id
+            u.email == usuario.email
+            and u.id != user_id
         ):
             raise HTTPException(
                 status_code=400,
@@ -95,6 +118,7 @@ def actualizar_usuario(
             )
 
     return actualizar_usuario_completo(
+        db,
         user_id,
         usuario
     )
@@ -105,12 +129,16 @@ def actualizar_usuario(
 def actualizar_usuario_parcialmente(
     user_id: int,
     usuario: UserUpdate,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
-    get_user_or_404(user_id)
+    get_user_or_404(
+        db,
+        user_id
+    )
 
     datos = usuario.model_dump(exclude_unset=True)
 
@@ -122,11 +150,13 @@ def actualizar_usuario_parcialmente(
 
     if "email" in datos:
 
-        for u in usuarios_db:
+        usuarios = obtener_todos_los_usuarios(db)
+
+        for u in usuarios:
 
             if (
-                u["email"] == datos["email"]
-                and u["id"] != user_id
+                u.email == datos["email"]
+                and u.id != user_id
             ):
                 raise HTTPException(
                     status_code=400,
@@ -134,23 +164,30 @@ def actualizar_usuario_parcialmente(
                 )
 
     return actualizar_usuario_parcial(
+        db,
         user_id,
         datos
     )
 
 
-
 @router.delete("/users/{user_id}")
 def eliminar_usuario_endpoint(
     user_id: int,
-    response: Response
+    response: Response,
+    db: Session = Depends(get_db)
 ):
 
     agregar_cabeceras(response)
 
-    get_user_or_404(user_id)
+    get_user_or_404(
+        db,
+        user_id
+    )
 
-    eliminar_usuario(user_id)
+    eliminar_usuario(
+        db,
+        user_id
+    )
 
     return {
         "message": "Usuario eliminado correctamente"

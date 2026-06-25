@@ -1,13 +1,21 @@
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+
 from app.services.user_service import (
     obtener_usuario_por_id,
     correo_existe
 )
 
 
-def get_user_or_404(user_id:int):
+def get_user_or_404(
+    db: Session,
+    user_id: int
+):
 
-    usuario = obtener_usuario_por_id(user_id)
+    usuario = obtener_usuario_por_id(
+        db,
+        user_id
+    )
 
     if not usuario:
         raise HTTPException(
@@ -18,9 +26,15 @@ def get_user_or_404(user_id:int):
     return usuario
 
 
-def validar_email_unico(email:str):
+def validar_email_unico(
+    db: Session,
+    email: str
+):
 
-    if correo_existe(email):
+    if correo_existe(
+        db,
+        email
+    ):
 
         raise HTTPException(
             status_code=400,
