@@ -6,6 +6,7 @@ from app.models.user_model import User
 from app.models.device_model import Device
 from app.models.loan_model import Loan
 from app.routes.device_routes import router as device_router
+from app.routes.loan_routes import router as loan_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -20,6 +21,12 @@ app.include_router(
     device_router,
     prefix="/api/v1",
     tags=["Devices"]
+)
+
+app.include_router(
+    loan_router,
+    prefix="/api/v1",
+    tags=["Loans"]
 )
 
 @app.get("/")

@@ -1,7 +1,12 @@
 from pydantic import BaseModel
 from datetime import datetime
+from enum import Enum
 from typing import Optional
 
+class LoanStatusEnum(str, Enum):
+    active = "active"
+    returned = "returned"
+    overdue = "overdue"
 
 class LoanCreate(BaseModel):
 
@@ -9,12 +14,12 @@ class LoanCreate(BaseModel):
 
     device_id: int
 
-    status: str = "active"
+    status: LoanStatusEnum = LoanStatusEnum.active
 
 
 class LoanUpdate(BaseModel):
 
-    status: Optional[str] = None
+    status: LoanStatusEnum
 
     return_date: Optional[datetime] = None
 
@@ -31,14 +36,14 @@ class LoanResponse(BaseModel):
 
     return_date: Optional[datetime]
 
-    status: str
+    status: LoanStatusEnum
 
     model_config = {
         "from_attributes": True
     }
 
 
-class LoanDetailUser(BaseModel):
+class LoanUserResponse(BaseModel):
 
     id: int
 
@@ -51,7 +56,7 @@ class LoanDetailUser(BaseModel):
     }
 
 
-class LoanDetailDevice(BaseModel):
+class LoanDeviceResponse(BaseModel):
 
     id: int
 
@@ -70,11 +75,11 @@ class LoanDetailResponse(BaseModel):
 
     id: int
 
-    status: str
+    status: LoanStatusEnum
 
-    user: LoanDetailUser
+    user: LoanUserResponse
 
-    device: LoanDetailDevice
+    device: LoanDeviceResponse
 
     model_config = {
         "from_attributes": True
