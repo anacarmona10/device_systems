@@ -87,3 +87,46 @@ En este proyecto, el modelo User representa la tabla users en SQLite, mientras q
 
 ### Reflexión final
 La incorporación de persistencia de datos mediante SQLAlchemy permitió transformar la API de un sistema basado en datos temporales a una solución capaz de almacenar información de forma permanente. A diferencia de las estructuras en memoria, la base de datos conserva los registros incluso después de reiniciar la aplicación, lo que la hace más cercana a un entorno real de producción.
+
+## [Proyecto-Final-v1] GA1-220501096-01-AA1-EV10 – FastAPI Avanzado: Migraciones con Alembic, Asociaciones de Modelos y Consultas con Joins en device_systems
+
+### Evidencias de Alembic
+
+![Alembic1](img/AlembicChambeando.png)
+
+![Alembic2](img/AlembicChambeandomas.png)
+
+### Evidencias de CRUD
+
+#### Crear un usuario para que preste
+
+![crearUsuarioSerio](img/CrearUsuario2.png)
+
+#### Crear un dispositivo para ser prestado
+
+![CrearDispositivo](img/CrearDispositivo.png)
+
+#### Crear préstamo
+
+![CreandoelPrestamo](img/CrearPrestamo.png)
+
+#### Listando el préstamo
+
+![ListandoPrestamo](img/ListandoPrestamo.png)
+
+#### Evidencia de filtros
+
+![PrimerFiltro](img/PrimerFiltro.png)
+
+![SegundoFiltro](img/SegundoFiltro.png)
+
+![TercerFiltro](img/TercerFiltro.png)
+
+#### Evidencia de devolución
+
+![Devolución](img/Devolución.png)
+
+### Reflexión final:
+
+Durante el desarrollo de este proyecto se demostró la importancia de utilizar migraciones con Alembic para gestionar los cambios en la estructura de la base de datos de forma organizada y segura, vitando modificaciones manuales que puedan generar inconsistencias.
+
