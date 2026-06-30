@@ -43,3 +43,7 @@ class User(Base):
     back_populates="user"
     )
 
+    hashed_password = Column(
+        String,
+        nullable=False
+    )

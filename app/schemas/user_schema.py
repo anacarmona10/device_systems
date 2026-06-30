@@ -10,10 +10,11 @@ class RoleEnum(str, Enum):
 
 # Modelo de entrada (para crear un usuario)
 class UserCreate(BaseModel):
-    name: str = Field(..., min_length=3, description="Nombre del usuario")
+    name: str = Field(..., min_length=3)
     email: EmailStr
+    password: str = Field(..., min_length=8)
     role: RoleEnum
-    is_active: bool
+    is_active: bool = True
 
 # Esto es para la actualización de usuarios para que todos los campos no sean obligatorios en ese caso 
 class UserUpdate(BaseModel):
