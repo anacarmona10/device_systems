@@ -130,3 +130,50 @@ La incorporación de persistencia de datos mediante SQLAlchemy permitió transfo
 
 Durante el desarrollo de este proyecto se demostró la importancia de utilizar migraciones con Alembic para gestionar los cambios en la estructura de la base de datos de forma organizada y segura, vitando modificaciones manuales que puedan generar inconsistencias.
 
+## [Proyecto-Final-v2] GA1-220501096-01-AA1-EV11 – FastAPI Seguridad: Autenticación, Middleware, CORS, Rate Limiting y Validación Avanzada en device_systems
+
+### Estructura actual del proyecto:
+
+![estructuraProyecto](img/EstructuraE11_1.png)
+
+![estructuraProyecto](img/EstructuraE11_2.png)
+
+![estructuraProyecto](img/EstructuraE11_3.png)
+
+![estructuraProyecto](img/EstructuraE11_4.png)
+
+![estructuraProyecto](img/EstructuraE11_5.png)
+
+### Registro de un usuario
+
+![registro](img/RegistroUsuario.png)
+
+### Login de un usuario
+
+![login](img/Login.png)
+
+### Auth / me
+
+En este caso autenticando como el usuario de soporte que tengo registrado.
+![Autenticación](img/AuthMe.png)
+
+### Evidencia del crud asegurado
+
+En este caso traté de eliminar un usuario siendo el usuario de soporte pero solo el admin puede ralizar esta acción por lo que la acción no se puede realizar.
+![eliminaciónInválida](img/EliminaciónInvalida.png)
+
+### Evidencia de rate limiting
+
+En este caso inicié sesión con el usuario que había utilizado anteriormente también para iniciar sesión más de 5 veces antes de que se cumpliera un minuto, por lo que la respuesta es el error 429, too many requests
+
+![error429](img/Error429.png)
+
+### Explicación de CORS configurado
+
+En este proyecto se configuró CORSMiddleware para permitir que únicamente aplicaciones fronted autorizadas puedan consumir la API durante el desarrollo. Se habilitaron los orígenes http://localhost:3000 y http://localhost:5173, correspondientes a entornos comunes de desarrollo con React y Vite. Además, se configuraron las opciones allow_credentials=True, allow_methods=["*"] y allow_headers=["*"] para facilitar la comunicación entre el cliente y la API.
+
+En un entorno de producción no es recomendable utilizar allow_origins=["*"] cuando se permiten credenciales, ya que esto podría exponer la API a solicitudes provenientes de sitios no confiables. Por esta razón, es una buena práctica definir únicamente los dominios que realmente necesitan acceder a los recursos del servidor.
+
+### Reflexión final sobre la importancia de la seguridad en APIs REST
+
+Durante el desarrollo de esta actividad fue posible comprender que la seguridad es un componente fundamental en cualquier API REST. No basta con implementar la funcionalidad del sistema; también es necesario proteger la información y controlar quién puede acceder a cada recurso.

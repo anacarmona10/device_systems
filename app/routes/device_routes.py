@@ -39,6 +39,10 @@ from app.dependencies.auth_dependency import (
 
 from app.models.user_model import User
 
+from fastapi import Request
+
+from app.middlewares.rate_limit import limiter
+
 router = APIRouter()
 
 
@@ -47,7 +51,9 @@ router = APIRouter()
     "/devices",
     response_model=list[DeviceResponse]
 )
+@limiter.limit("30/minute")
 def listar_dispositivos(
+    request: Request,
     response: Response,
     device_type: Optional[DeviceTypeEnum] = Query(None),
     is_available: Optional[bool] = Query(None),
@@ -88,7 +94,9 @@ def obtener_dispositivo(
     response_model=DeviceResponse,
     status_code=201
 )
+@limiter.limit("10/minute")
 def crear_dispositivo(
+    request: Request,
     dispositivo: DeviceCreate,
     response: Response,
     db: Session = Depends(get_db),
@@ -175,6 +183,7 @@ def eliminar_dispositivo_endpoint(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin)
 ):
+
 
 
     get_device_or_404(

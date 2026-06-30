@@ -31,6 +31,10 @@ from app.models.user_model import User
 
 from fastapi.security import OAuth2PasswordRequestForm
 
+from fastapi import Request
+
+from app.middlewares.rate_limit import limiter
+
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"]
@@ -48,7 +52,9 @@ router = APIRouter(
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED
 )
+@limiter.limit("3/minute")
 def register(
+    request: Request,
     datos: UserRegister,
     response: Response,
     db: Session = Depends(get_db)
@@ -80,7 +86,9 @@ def register(
     "/login",
     response_model=Token
 )
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
