@@ -48,9 +48,6 @@ def get_db():
         db.close()
 
 
-def agregar_cabeceras(response: Response):
-    response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "1.0"
 
 
 # GET todos
@@ -69,7 +66,6 @@ def listar_prestamos(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return obtener_prestamos(
     db,
@@ -91,7 +87,6 @@ def obtener_prestamo(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     prestamo = obtener_prestamo_por_id(
         db,
@@ -119,7 +114,6 @@ def listar_prestamos_usuario(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_user_or_404(
         db,
@@ -144,7 +138,6 @@ def listar_prestamos_dispositivo(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_device_or_404(
         db,
@@ -170,7 +163,6 @@ def crear(
     current_user: User = Depends(get_current_user)
 ):
 
-    agregar_cabeceras(response)
 
     return crear_prestamo(
         db,
@@ -190,7 +182,6 @@ def devolver(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return devolver_prestamo(
         db,

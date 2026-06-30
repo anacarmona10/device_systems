@@ -37,9 +37,6 @@ router = APIRouter(
 )
 
 
-def agregar_cabeceras(response: Response):
-    response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "1.0"
 
 
 # ===========================
@@ -57,7 +54,7 @@ def register(
     db: Session = Depends(get_db)
 ):
 
-    agregar_cabeceras(response)
+
 
     if obtener_usuario_por_email(
         db,
@@ -89,7 +86,7 @@ def login(
     db: Session = Depends(get_db)
 ):
 
-    agregar_cabeceras(response)
+
 
     usuario = autenticar_usuario(
         db,

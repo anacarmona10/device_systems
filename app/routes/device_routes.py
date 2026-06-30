@@ -41,9 +41,6 @@ from app.models.user_model import User
 
 router = APIRouter()
 
-def agregar_cabeceras(response: Response):
-    response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "1.0"
 
 # GET
 @router.get(
@@ -59,7 +56,6 @@ def listar_dispositivos(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return obtener_todos_los_dispositivos(
         db,
@@ -80,7 +76,6 @@ def obtener_dispositivo(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return get_device_or_404(
         db,
@@ -100,7 +95,6 @@ def crear_dispositivo(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     validar_serial_unico(
         db,
@@ -125,7 +119,6 @@ def actualizar_dispositivo_endpoint(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_device_or_404(
         db,
@@ -151,7 +144,6 @@ def actualizar_dispositivo_parcial_endpoint(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_device_or_404(
         db,
@@ -184,7 +176,6 @@ def eliminar_dispositivo_endpoint(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_device_or_404(
         db,

@@ -31,9 +31,6 @@ from app.dependencies.auth_dependency import (
 
 from app.models.user_model import User
 
-def agregar_cabeceras(response: Response):
-    response.headers["X-App-Name"] = "device_systems"
-    response.headers["X-API-Version"] = "1.0"
 
 
 @router.get("/users", response_model=list[UserResponse])
@@ -47,7 +44,6 @@ def listar_usuarios(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return obtener_todos_los_usuarios(
         db,
@@ -66,7 +62,6 @@ def obtener_usuario(
     current_user: User = Depends(require_support_or_admin)
 ):
 
-    agregar_cabeceras(response)
 
     return get_user_or_404(
         db,
@@ -87,7 +82,6 @@ def crear_usuario(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     validar_email_unico(
         db,
@@ -109,7 +103,6 @@ def actualizar_usuario(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_user_or_404(
         db,
@@ -145,7 +138,6 @@ def actualizar_usuario_parcialmente(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_user_or_404(
         db,
@@ -190,7 +182,6 @@ def eliminar_usuario_endpoint(
     current_user: User = Depends(require_admin)
 ):
 
-    agregar_cabeceras(response)
 
     get_user_or_404(
         db,
