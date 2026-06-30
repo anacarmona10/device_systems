@@ -24,6 +24,13 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.database_dependency import get_db
 
+from app.dependencies.auth_dependency import (
+    require_admin,
+    require_support_or_admin
+)
+
+from app.models.user_model import User
+
 def agregar_cabeceras(response: Response):
     response.headers["X-App-Name"] = "device_systems"
     response.headers["X-API-Version"] = "1.0"
@@ -36,7 +43,8 @@ def listar_usuarios(
     is_active: Optional[bool] = Query(None),
     sort_by: Optional[str] = Query(None),
     email: Optional[str] = Query(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -54,7 +62,8 @@ def listar_usuarios(
 def obtener_usuario(
     user_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -74,7 +83,8 @@ def obtener_usuario(
 def crear_usuario(
     usuario: UserCreate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -95,7 +105,8 @@ def actualizar_usuario(
     user_id: int,
     usuario: UserCreate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -130,7 +141,8 @@ def actualizar_usuario_parcialmente(
     user_id: int,
     usuario: UserUpdate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -174,7 +186,8 @@ def actualizar_usuario_parcialmente(
 def eliminar_usuario_endpoint(
     user_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)

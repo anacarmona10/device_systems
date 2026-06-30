@@ -32,6 +32,13 @@ from app.services.device_service import (
     eliminar_dispositivo
 )
 
+from app.dependencies.auth_dependency import (
+    require_admin,
+    require_support_or_admin
+)
+
+from app.models.user_model import User
+
 router = APIRouter()
 
 def agregar_cabeceras(response: Response):
@@ -48,7 +55,8 @@ def listar_dispositivos(
     device_type: Optional[DeviceTypeEnum] = Query(None),
     is_available: Optional[bool] = Query(None),
     brand: Optional[str] = Query(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -68,7 +76,8 @@ def listar_dispositivos(
 def obtener_dispositivo(
     device_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -87,7 +96,8 @@ def obtener_dispositivo(
 def crear_dispositivo(
     dispositivo: DeviceCreate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -111,7 +121,8 @@ def actualizar_dispositivo_endpoint(
     device_id: int,
     dispositivo: DeviceCreate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -136,7 +147,8 @@ def actualizar_dispositivo_parcial_endpoint(
     device_id: int,
     dispositivo: DeviceUpdate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)
@@ -168,7 +180,8 @@ def actualizar_dispositivo_parcial_endpoint(
 def eliminar_dispositivo_endpoint(
     device_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin)
 ):
 
     agregar_cabeceras(response)

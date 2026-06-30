@@ -29,6 +29,13 @@ from app.dependencies.device_dependencies import get_device_or_404
 
 from typing import Optional
 
+from app.dependencies.auth_dependency import (
+    require_admin,
+    require_support_or_admin,
+    get_current_user
+)
+
+from app.models.user_model import User
 
 router = APIRouter()
 
@@ -58,8 +65,8 @@ def listar_prestamos(
     user_email: Optional[str] = None,
     device_type: Optional[str] = None,
 
-
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -80,7 +87,8 @@ def listar_prestamos(
 def obtener_prestamo(
     loan_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -107,7 +115,8 @@ def obtener_prestamo(
 def listar_prestamos_usuario(
     user_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -131,7 +140,8 @@ def listar_prestamos_usuario(
 def listar_prestamos_dispositivo(
     device_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)
@@ -156,7 +166,8 @@ def listar_prestamos_dispositivo(
 def crear(
     datos: LoanCreate,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
 
     agregar_cabeceras(response)
@@ -175,7 +186,8 @@ def crear(
 def devolver(
     loan_id: int,
     response: Response,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_or_admin)
 ):
 
     agregar_cabeceras(response)

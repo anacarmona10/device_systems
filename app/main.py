@@ -14,8 +14,8 @@ from app.auth.auth_routes import router as auth_router
 
 app = FastAPI(
     title="device_systems API",
-    description="API REST para gestión de usuarios del sistema device_systems",
-    version="1.0",
+    description="API REST segura para gestión de usuarios, dispositivos y préstamos",
+    version="3.0.0"
 )
 
 app.include_router(auth_router)
